@@ -91,7 +91,8 @@ export const artUpdateForms = [
             }
         },
         props: {
-            name: 'type'
+            name: 'type',
+            defaultValue: 1
         },
         rules: [
             {

@@ -30,40 +30,43 @@ const buttonItemWrapper = {
     }
 }
 
-function ArtUpdate ({dispatch, location, _}) {
-    const { query: { id }} = location
+function ArtUpdate ({ location, dispatch }) {
+    const { query: { id } } = location
     const [form] = Form.useForm()
-    const { resetFields, setFieldsValue, getFieldsValue } = form
-    const [context, setContext] = useState('')
-    const timerRef = useRef()
-    timerRef.current = () => setTimeout(() => {
-        const { info: data } = _
-        const _form = data.shift()
-        const fields = artUpdateForms.map((item, _) => ({field: item.props.name}))
-                                        .reduce((acc, curr) => {
-                                            acc[curr.field] = (_form&&_form[curr.field]) || undefined
-                                            return acc
-                                        }, {})
-        setFieldsValue(fields)
-    }, 100);
+    const { getFieldsValue, resetFields, validateFields } = form
+    const [_form, setContext] = useState({ type: 1, content: '' })
+    const initialValues = { type: 1 }
 
-    useEffect(() => {
-        try {
-            if (id) {
-                dispatch({ type: 'art_list/detailBy', payload: { id }})
-            }
-        } catch (err) {
-            throw(err)
-        }
-        return () => {
-            clearTimeout(timerRef)
-            dispatch({ type: 'art_list/clearInfo'})
-        }
-    }, [])
+    const handleEditorChange = val => {
+        const values = getFieldsValue()
+        setContext(values)
+    }
 
-    useEffect(() => {
-        timerRef.current()
-    }, [_.info])
+    /**
+     * 按条件渲染编辑器
+     * @params type 1: 富文本编辑器, 2: markdown编辑器
+     */
+    const renderEditorType = () => {
+        if (_form.type === 1) {
+            return  <RichEditor />
+        } else if (_form.type === 2) {
+            return <Markdown />
+        }
+    }
+
+    const renderItem = () => {
+        return artUpdateForms.map((item, index) => {
+            return (<FormItem key={index} label={item.label} {...item.props} {...item.wrapper} rules={item.rules}>
+                {
+                    item.type === 'normal' ? (<Input />) : 
+                    item.type === 'select' ? (<Select onChange={handleEditorChange} >
+                        <Option value={1} >richtext</Option>
+                        <Option value={2} >markdown</Option>
+                    </Select>) : renderEditorType()
+                }
+            </FormItem>)
+        })
+    }
 
     const handleSubmit = async () => {
         const valid = await form.validateFields()
@@ -73,58 +76,21 @@ function ArtUpdate ({dispatch, location, _}) {
            if (!id) delete _payload.id
            dispatch({type: _type, payload: _payload})
            setTimeout(() => {
+               setContext(initialValues)
                resetFields()
            }, 500)
         }
     }
 
-    const handleEditorChange = val => {
-        const { getFieldValue } = form
-        const context = getFieldValue('content')
-        setContext(context)
-    }
-
-    const handleTypeChange = (val) => {
-        let { context: _context } = _.info
-    }
-
-    /**
-     * 按条件渲染编辑器
-     * @params type 1: 富文本编辑器, 2: markdown编辑器
-     */
-    const renderEditorType = () => {
-        const _form = getFieldsValue()
-        const { type } = _form
-        const isMarkdown = type === 2
-        return (isMarkdown ? 
-                        <Markdown value={context} onChange={handleEditorChange} /> :
-                        <RichEditor value={context} onChange={handleEditorChange} />)
-    }
-
-    const renderItem = () => {
-        return artUpdateForms.map((item, index) => {
-            return (<FormItem key={index} label={item.label} {...item.props} {...item.wrapper} rules={item.rules}>
-                {
-                    item.type === 'normal' ? (<Input />) : 
-                    item.type === 'select' ? (<Select >
-                        <Option value={1} >richtext</Option>
-                        <Option value={2} >markdown</Option>
-                    </Select>) : renderEditorType()
-                }
-            </FormItem>)
-        })
-    }
-
     return (<PageHeaderWrapper>
         <Form
-          {...formWrapper}
-          form={form}>
-            {
-                renderItem()
-            }
-            <FormItem {...buttonItemWrapper}>
-                <Button type='primary' block onClick={handleSubmit}>提交</Button>
-            </FormItem>
+            initialValues={initialValues}
+            {...formWrapper}
+            form={form}>
+            { renderItem() }
+             <FormItem {...buttonItemWrapper}>
+                 <Button type='primary' block onClick={handleSubmit}>提交</Button>
+             </FormItem>
         </Form>
     </PageHeaderWrapper>)
 }

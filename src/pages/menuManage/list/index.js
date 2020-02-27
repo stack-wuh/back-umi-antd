@@ -25,7 +25,7 @@ function SlideMenu ({_, dispatch}) {
     const [docsId, setDocsIdValue] = useState(null)
     const [form] = Form.useForm()
     const { data: dataSource } = _
-    const { getFieldsValue, resetFields, setFieldsValue } = form
+    const { getFieldsValue, resetFields, setFieldsValue, validateFields } = form
     const columns = [
         {
             title: 'ID',
@@ -87,23 +87,25 @@ function SlideMenu ({_, dispatch}) {
         }, 500)
     }
 
-    const handleSubmit = params => {
-        const _form = getFieldsValue()
-        if (docsId) {
-            dispatch({
-                type: 'slide/update',
-                payload: { ..._form, id: docsId }
-            })
-        } else {
-            dispatch({
-                type: 'slide/create',
-                payload: _form
-            })
+    const handleSubmit = async params => {
+        const valid = await validateFields()
+        if (valid) {
+            if (docsId) {
+                dispatch({
+                    type: 'slide/update',
+                    payload: { ...valid, id: docsId }
+                })
+            } else {
+                dispatch({
+                    type: 'slide/create',
+                    payload: valid
+                })
+            }
+            
+            setTimeout(()=> {
+                handleCancel()
+            }, 800)
         }
-        
-        setTimeout(()=> {
-            handleCancel()
-        }, 800)
     }
 
     const handleCreate = () => {
