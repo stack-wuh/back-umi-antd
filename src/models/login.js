@@ -1,12 +1,14 @@
 import { stringify } from 'querystring';
 import { router } from 'umi';
-import { fakeAccountLogin, userLogin } from '@/services/login';
+import { fakeAccountLogin, userLogin, userLogout } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
+import { message } from 'antd'
 const Model = {
   namespace: 'login',
   state: {
     status: undefined,
+    currentUser: {}
   },
   effects: {
     *login({ payload }, { call, put }) {
@@ -44,9 +46,12 @@ const Model = {
       }
     },
 
-    logout() {
+    *logout(_, { call, put }) {
       const { redirect } = getPageQuery(); // Note: There may be security issues, please note
-
+      const response = yield call(userLogout, _.payload)
+      if (response.code !== 20000) return message.error('登出失败, 请重试!')
+      yield put({ type: 'clearCurrent' })
+      localStorage.removeItem('token')
       if (window.location.pathname !== '/user/login' && !redirect) {
         router.replace({
           pathname: '/user/login',
@@ -60,8 +65,14 @@ const Model = {
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
-      return { ...state, status: payload.status, type: payload.type, user: payload.data.user };
+      return { ...state, status: payload.status, type: payload.type, currentUser: payload.data.user };
     },
+    clearCurrent(state, {payload}) {
+      return {
+        ...state,
+        currentUser: {}
+      }
+    }
   },
 };
 export default Model;

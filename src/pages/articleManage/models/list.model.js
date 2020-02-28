@@ -41,6 +41,7 @@ const Model = {
         * detailBy (_, { call, put }) {
             const response = yield call(articleDetail, _.payload)
             if (response.code === 20000) {
+                yield put ({ type: 'clearInfo' })
                 yield put ({ type: 'saveInfo', payload: response })
             }
         }

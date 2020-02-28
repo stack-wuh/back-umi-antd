@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Button, Table, Switch, Modal, message } from 'antd'
 import { connect } from 'dva'
 import { router } from 'umi'
 import PageLoading from '@/components/PageLoading'
 import { PageHeaderWrapper } from '@ant-design/pro-layout'
 import { artTableColumns } from '../map'
-import Model from '../models/list.model'
 
 function ArtList ({_, dispatch}, isloading) {
     const { data } = _

@@ -5,6 +5,7 @@ import { artUpdateForms } from '../map'
 import RichEditor from '@/components/richeditor'
 import Markdown from '@/components/Markdown'
 import { connect } from 'dva'
+import { articleDetail } from '@/services/article'
 const FormItem = Form.Item
 const Option = Select.Option
 
@@ -30,16 +31,35 @@ const buttonItemWrapper = {
     }
 }
 
-function ArtUpdate ({ location, dispatch }) {
+function ArtUpdate ({ _, location, dispatch }) {
     const { query: { id } } = location
+    const [info, setInfoValue] = useState([])
     const [form] = Form.useForm()
-    const { getFieldsValue, resetFields, validateFields } = form
+    const { resetFields, setFieldsValue } = form
     const [_form, setContext] = useState({ type: 1, content: '' })
     const initialValues = { type: 1 }
 
+    useEffect(() => {
+        if (!id) return
+        async function fetch () {
+            const res = await articleDetail({id})
+            if (res) {
+                const { info: _info } = res
+                const { title, type, content, sub_title } = _info[0]
+                setInfoValue(_info)
+                setFieldsValue({ title, type, content, sub_title })
+                setContext({ type })
+            }
+        }
+        fetch()
+        return () => {
+            setInfoValue([])
+        }
+    }, [id])
+
     const handleEditorChange = val => {
-        const values = getFieldsValue()
-        setContext(values)
+        const data = JSON.parse(JSON.stringify(info[0]))
+        setContext({ type: val, content: data.content })
     }
 
     /**
@@ -48,9 +68,10 @@ function ArtUpdate ({ location, dispatch }) {
      */
     const renderEditorType = () => {
         if (_form.type === 1) {
-            return  <RichEditor />
+            return  <RichEditor value={_form.content} />
+        // eslint-disable-next-line no-else-return
         } else if (_form.type === 2) {
-            return <Markdown />
+            return <Markdown value={_form.content} />
         }
     }
 
