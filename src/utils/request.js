@@ -48,14 +48,10 @@ const errorHandler = error => {
 /**
  * 配置request请求时的默认参数
  */
-const token = getAuthorization()
 const request = extend({
   errorHandler,
   // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
-  headers: {
-    Authorization: token.token || undefined
-  }
 });
 
 /**
@@ -88,7 +84,12 @@ request.interceptors.request.use((url, ops) => {
     const _ops = merge(ops)
     return ({
       url: `${url}`,
-      options: _ops
+      options: {
+        ..._ops,
+        headers: {
+          Authorization: getAuthorization().token || undefined
+        }
+      }
     })
   } catch (err) {
     throw(err)
