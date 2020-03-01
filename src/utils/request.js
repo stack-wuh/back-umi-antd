@@ -22,13 +22,12 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
-/**
- * 异常处理程序
- */
+// /**
+//  * 异常处理程序
+//  */
 
 const errorHandler = error => {
   const { response } = error;
-
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
@@ -45,6 +44,7 @@ const errorHandler = error => {
 
   return response;
 };
+
 /**
  * 配置request请求时的默认参数
  */

@@ -50,13 +50,13 @@ const Model = {
         save (state, { payload }) {
             return {
                 ...state,
-                data: payload.data,
+                data: payload.data || []
             }
         },
         saveInfo (state, { payload }) {
             return {
                 ...state,
-                info: payload.info
+                info: payload.info || []
             }
         },
         clearInfo (state) {

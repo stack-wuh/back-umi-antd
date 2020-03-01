@@ -59,9 +59,16 @@ export const getRouteAuthority = (path, routeData) => {
 };
 
 export const getAuthorization = () => {
-  let token = localStorage.getItem('token') || ''
-  token = JSON.parse(token)
-  if (token) {
-    return token.tokens.slice(token.tokens.length-1)[0]
+  try {
+    let token = localStorage.getItem('token') || '{}'
+    token = JSON.parse(token)
+    if (token && token.tokens) {
+      const maxLength = token.tokens.length - 1
+      return token.tokens.slice(maxLength)[0]
+    }
+    return { token: {}}
+  } catch (err) {
+    throw new Error('getAuthorization: ', err)
   }
+ 
 }

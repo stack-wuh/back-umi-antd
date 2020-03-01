@@ -27,7 +27,7 @@ const plugins = [
       },
       dynamicImport: {
         loadingComponent: './components/PageLoading/index',
-        webpackChunkName: true,
+        webpackChunkName: false,
         level: 3,
       },
       pwa: pwa
@@ -39,10 +39,27 @@ const plugins = [
           }
         : false, // default close dll, because issue https://github.com/ant-design/ant-design-pro/issues/4665
       // dll features https://webpack.js.org/plugins/dll-plugin/
-      // dll: {
-      //   include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-      //   exclude: ['@babel/runtime', 'netlify-lambda'],
-      // },
+      dll: {
+        include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+        exclude: ['@babel/runtime', 'netlify-lambda'],
+      },
+      routes: {
+        exclude: [
+          /model\.(j|t)sx?$/,
+          /service\.(j|t)sx?$/,
+          /models\//,
+          /components\//,
+          /services\//,
+          /chart\/Container\.js$/,
+          /chart\/ECharts\/.+Component\.js$/,
+          /chart\/ECharts\/.+ComPonent\.js$/,
+          /chart\/ECharts\/theme\/.+\.js$/,
+          /chart\/highCharts\/.+Component\.js$/,
+          /chart\/highCharts\/mapdata\/.+\.js$/,
+          /chart\/Recharts\/.+Component\.js$/,
+          /chart\/Recharts\/Container\.js$/,
+        ]
+      }
     },
   ],
   [
@@ -69,7 +86,7 @@ if (isAntDesignProPreview) {
 
 export default {
   plugins,
-  hash: true,
+  hash: false,
   targets: {
     ie: 11,
   },
@@ -208,4 +225,6 @@ export default {
     basePath: '/',
   },
   proxy: proxy[REACT_APP_ENV || 'dev'],
+  base: '/',
+  publicPath: '/'
 };

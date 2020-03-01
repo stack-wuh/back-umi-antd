@@ -4,6 +4,7 @@ import { Table, Button, Modal, Drawer, Form, Input } from 'antd'
 import { PageHeaderWrapper } from '@ant-design/pro-layout'
 import { userForm } from '../map'
 import styles from './index.less'
+
 const FormItem=Form.Item
 
 const formWrapper = {
@@ -14,14 +15,13 @@ const formWrapper = {
         md: { span: 16}
     }
 }
-
 function User ({ _, dispatch }) {
     const { data: dataSource } = _
     const [dialogVisible, changeDialogVisble] = useState(false)
     const [docsId, setDocsId] = useState(null)
     const [form] = Form.useForm()
     const { resetFields, validateFields, setFieldsValue } = form
-    const handleDelete = (params) => {
+    const handleDelete = params => {
         const { id } = params
         Modal.confirm({
             title: '提示',
@@ -42,6 +42,11 @@ function User ({ _, dispatch }) {
         }, 500)
     }
 
+    const handleCancel = () => {
+        resetFields()
+        changeDialogVisble(false)
+    }
+
     const handleSubmit = async () => {
         const res = await validateFields()
         if (docsId) {
@@ -56,11 +61,6 @@ function User ({ _, dispatch }) {
             })
         }
         handleCancel()
-    }
-
-    const handleCancel = () => {
-        resetFields()
-        changeDialogVisble(false)
     }
 
     const handleCreate = () => {
@@ -127,7 +127,7 @@ function User ({ _, dispatch }) {
         <div className={styles.header}>
             <Button onClick={handleCreate} type='primary'>新建</Button>
         </div>
-        <Table rowKey='id' scroll={{x: 1300}} columns={columns} dataSource={dataSource}></Table>
+        <Table rowKey='id' scroll={{x: 1300, y: 500}} columns={columns} dataSource={dataSource} />
         {
             dialogVisible && 
             (<Drawer
@@ -150,6 +150,7 @@ function User ({ _, dispatch }) {
     </PageHeaderWrapper>)
 }
 
+// eslint-disable-next-line @typescript-eslint/camelcase
 const mapStateToProps = ({ user_list }) => ({ _: user_list })
 
 export default connect(mapStateToProps)(User)

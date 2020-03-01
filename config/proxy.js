@@ -26,11 +26,20 @@ export default {
   },
   pre: {
     '/api/': {
-      target: 'your pre url',
+      target: 'http://api.wuh.site/',
       changeOrigin: true,
       pathRewrite: {
-        '^': '',
+        '^/api/': 'uuu',
       },
     },
+    production: {
+      '/api/': {
+        target: 'http://api.wuh.site/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/': ''
+        }
+      }
+    }
   },
 };

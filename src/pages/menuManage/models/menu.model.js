@@ -48,7 +48,7 @@ const model = {
         save (state, { payload }) {
             return {
                 state,
-                data: payload.data
+                data: payload.data || []
             }
         }
     },

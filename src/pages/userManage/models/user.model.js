@@ -4,7 +4,10 @@ import {
   userUpdateBy,
   userDeleteBy
 } from '@/services/user'
-import { message } from 'antd'
+import { 
+  message
+} from 'antd'
+
 const model = {
     namespace: 'user_list',
     state: {
@@ -13,7 +16,7 @@ const model = {
     effects: {
         *query (_, { call, put }) {
             const response = yield call(userQueryBy, _.payload)
-            if (response.code === 20000) {
+            if (response && response.code === 20000) {
                 yield put({ type: 'save', payload: response })
             } else {
                 message.error('操作失败' + response.msg)
@@ -52,7 +55,7 @@ const model = {
         save: (state, {payload}) => {
             return {
                 ...state,
-                data: payload.data
+                data: payload.data || []
             }
         }
     },
