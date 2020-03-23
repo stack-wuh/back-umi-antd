@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card, Typography, Alert } from 'antd';
+import { Card, Typography, Alert, Upload, Button } from 'antd';
 import styles from './Welcome.less';
 
 const CodePreview = ({ children }) => (
@@ -10,6 +10,14 @@ const CodePreview = ({ children }) => (
     </code>
   </pre>
 );
+
+const uploadProps = {
+  name: 'file',
+  action: 'https://api.wuh.site/upload/image',
+  onChange ({file}) {
+    console.log(file)
+  }
+}
 
 export default () => (
   <PageHeaderWrapper>
@@ -58,5 +66,9 @@ export default () => (
       </a>
       。
     </p>
+
+    <Upload {...uploadProps}>
+      <Button>click me upload</Button>
+    </Upload>
   </PageHeaderWrapper>
 );

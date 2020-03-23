@@ -163,6 +163,12 @@ export default {
               component: './menuManage/list'
             },
             {
+              name: 'banner',
+              icon: 'AppstoreAddOutlined',
+              path: '/banner',
+              component: './bannerManage/list'
+            },
+            {
               name: 'user',
               icon: 'user',
               path: '/user-list',

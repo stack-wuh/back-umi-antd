@@ -5,6 +5,7 @@
 import { extend } from 'umi-request';
 import { notification } from 'antd';
 import { getAuthorization } from '@/utils/utils'
+
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -58,22 +59,25 @@ const request = extend({
  * 惰性加载函数, 合并一下多种分支的options值
  * @param {*} params 
  */
-function merge (params) {
-  if (params.method.toLocaleUpperCase() === 'GET') {
-    merge = function (params) {
-      return {
-        ...params,
-        params: { ...params.params, timestamp: + new Date()}
+function merge (payload) {
+  switch (payload.method.toLocaleUpperCase()) {
+    case 'GET': return {
+      ...payload,
+      params: {
+        ...payload.params,
+        timestamp: + new Date()
       }
     }
-  } else {
-    merge = function (params) {
-      const { params: _params, ...args } = params
-      const { timestamp, ...s } = _params
-      return { ...args, ...s }
-    }
+    case 'POST': return (() => {
+      const { params, ...args} = payload
+      const { timestamp, ...s } = params
+      return {
+        ...args,
+        ...s
+      }
+    })()
+    default: return payload
   }
-  return merge(params)
 }
 
 /**

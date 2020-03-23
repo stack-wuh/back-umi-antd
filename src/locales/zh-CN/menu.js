@@ -52,5 +52,6 @@ export default {
   'menu.art': '文章管理',
   'menu.art.update': '编辑文章',
   'menu.slide.menu': '菜单管理',
-  'menu.user': '用户管理'
+  'menu.user': '用户管理',
+  'menu.banner': 'Banner管理'
 };

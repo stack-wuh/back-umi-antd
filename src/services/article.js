@@ -1,7 +1,9 @@
 import request from '@/utils/request'
 
 export async function articleList (params) {
-    return request(`/api/articles`)
+    return request(`/api/articles`, {
+        params
+    })
 }
 
 export async function articleUpdateBy (params) {
