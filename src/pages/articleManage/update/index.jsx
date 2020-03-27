@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Form, Input, Button, Select } from 'antd'
+import React, { useState, useEffect, useRef } from 'react'
+import { PageHeaderWrapper } from '@ant-design/pro-layout'
+import { UploadOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Select, Upload } from 'antd'
 import { artUpdateForms } from '../map'
 import RichEditor from '@/components/richeditor'
 import Markdown from '@/components/Markdown'
@@ -33,11 +34,24 @@ const buttonItemWrapper = {
 
 function ArtUpdate ({ _, location, dispatch }) {
     const { query: { id } } = location
+    const uploadRef = useRef(null)
     const [info, setInfoValue] = useState([])
+    const [ isShowUpload, setShowUpload ] = useState(true)
     const [form] = Form.useForm()
-    const { resetFields, setFieldsValue } = form
+    const { resetFields, setFieldsValue, getFieldValue } = form
     const [_form, setContext] = useState({ type: 1, content: '' })
     const initialValues = { type: 1 }
+
+    const uploadProps = {
+        action: 'https://api.wuh.site/upload/image',
+        name: 'file',
+        onChange: ({file, fileList}) => {
+            if(file && file.response) {
+                const { urlPath } = file.response.data
+                setFieldsValue({ cover_img: urlPath })
+            }
+        }
+    }
 
     useEffect(() => {
         if (!id) return
@@ -45,10 +59,11 @@ function ArtUpdate ({ _, location, dispatch }) {
             const res = await articleDetail({id})
             if (res) {
                 const { info: _info } = res
-                const { title, type, content, sub_title } = _info[0]
+                const { title, type, content, sub_title, cover_img } = _info[0]
                 setInfoValue(_info)
-                setFieldsValue({ title, type, content, sub_title })
+                setFieldsValue({ title, type, content, sub_title, cover_img })
                 setContext({ type })
+                cover_img && setShowUpload(false)
             }
         }
         fetch()
@@ -103,11 +118,30 @@ function ArtUpdate ({ _, location, dispatch }) {
         }
     }
 
+    const normFile = (e) => {
+        if (Array.isArray(e)) {
+            return e
+        }
+        return e && e.fileList
+    }
+
     return (<PageHeaderWrapper>
         <Form
             initialValues={initialValues}
             {...formWrapper}
             form={form}>
+            <FormItem name='cover_img' label='封面图' rules={[{ required: false }]} >
+                {
+                    (getFieldValue('cover_img') && !isShowUpload) ? <div>
+                        <img src={getFieldValue('cover_img')} alt='cover_img' style={{width: 'auto', maxWidth: '100%'}} />
+                        <Button onClick={() => setShowUpload(true)}>更换封面图</Button>
+                    </div>: 
+                    ( <Upload ref={uploadRef} {...uploadProps} listType='picture-card' valuePropName='fileList'>
+                        <UploadOutlined style={{fontSize: '30px'}} />
+                    </Upload>)
+                }
+               
+            </FormItem>
             { renderItem() }
              <FormItem {...buttonItemWrapper}>
                  <Button type='primary' block onClick={handleSubmit}>提交</Button>

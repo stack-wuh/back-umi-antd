@@ -53,5 +53,7 @@ export default {
   'menu.art.update': '编辑文章',
   'menu.slide.menu': '菜单管理',
   'menu.user': '用户管理',
-  'menu.banner': 'Banner管理'
+  'menu.banner': 'Banner管理',
+  'menu.wx': '微信管理',
+  'menu.wx.material': '素材管理'
 };

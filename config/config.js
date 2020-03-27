@@ -175,6 +175,15 @@ export default {
               component: './userManage/list'
             },
             {
+              name: 'wx',
+              icon: 'wechat',
+              routes: [{
+                name:'material',
+                path: '/wx-material',
+                component: './wxManage/material'
+              }]
+            },
+            {
               component: './404',
             },
           ],

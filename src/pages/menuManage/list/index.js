@@ -78,7 +78,7 @@ function SlideMenu ({_, dispatch}) {
         const _form = {
             label,
             icon,
-            path: path.substr(1)
+            path: path.replace(/^\//gi, '')
         }
         changeDialogVisible(true)
         setTimeout(() => {
