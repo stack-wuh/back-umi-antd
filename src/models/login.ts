@@ -3,7 +3,7 @@ import { Effect } from 'dva';
 import { stringify } from 'querystring';
 import { router } from 'umi';
 
-import { fakeAccountLogin } from '@/services/login';
+import { fakeAccountLogin, postLoginByParams } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
@@ -34,6 +34,17 @@ const Model: LoginModelType = {
 
   effects: {
     *login({ payload }, { call, put }) {
+      const res = yield call(postLoginByParams, payload)
+      // yield put({
+      //   type: 'changeLoginStatus',
+      //   payload: res.token
+      // })
+      sessionStorage.setItem('token', JSON.stringify(res.data.token))
+
+      if (res.data.token) {
+        window.location.href = '/'
+      }
+      return
       const response = yield call(fakeAccountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
