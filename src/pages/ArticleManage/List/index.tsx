@@ -5,6 +5,7 @@ import ProTable, { ProColumns } from '@ant-design/pro-table'
 import { TableListItem } from './data.d'
 import TableOptionBtns, { BtnOptionProps } from '@/components/TableOptionBtns'
 import { queryArticle, deleteArticle } from './service'
+import { postMaterial } from '../../WechatManage/Material/service'
 
 const ArticleList: React.FC<{}> = ({ history }) => {
     const actionRef = useRef(null)
@@ -33,6 +34,10 @@ const ArticleList: React.FC<{}> = ({ history }) => {
                     }
                 })
             }
+        },
+        {
+            text: '一键推送至微信',
+            onClick: () => {}
         }
     ]
 

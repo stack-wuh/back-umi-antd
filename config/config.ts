@@ -83,6 +83,8 @@ if (isAntDesignProPreview) {
 export default {
   plugins,
   hash: true,
+  base: '/',
+  publicPath: '/',
   targets: {
     ie: 11,
   },
@@ -99,6 +101,7 @@ export default {
         },
       ],
     },
+
     {
       path: '/',
       component: '../layouts/SecurityLayout',
@@ -134,26 +137,10 @@ export default {
                 },
               ],
             },
-            {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-            },
-            {
-              name: 'menu',
-              icon: 'menu',
-              path: '/menus',
-              component: './MenusManage'
-            },
-            {
-              name: 'banner',
-              icon: 'BuildOutlined',
-              path: '/banner',
-              component: './BannerManage'
-            },
+
             {
               name: 'art',
+              path: '/art',
               icon: 'DeploymentUnitOutlined',
               routes: [
                 {
@@ -170,13 +157,49 @@ export default {
                 }
               ]
             },
+
+            {
+              name: 'banner',
+              icon: 'BuildOutlined',
+              path: '/banner',
+              component: './BannerManage'
+            },
+            {
+              name: 'menu',
+              icon: 'menu',
+              path: '/menus',
+              component: './MenusManage'
+            },
+
+            {
+              name: 'wx',
+              icon: 'wechat',
+              path: '/wx',
+              routes: [
+                {
+                  path: '/wx/material',
+                  icon: 'wechat',
+                  name: 'material',
+                  component: './WechatManage/Material'
+                }
+              ]
+            },
+
+            {
+              name: 'list.table-list',
+              icon: 'table',
+              path: '/list',
+              component: './ListTableList',
+            },
           ],
         },
         {
           component: './404',
         },
       ],
+      
     },
+
     {
       component: './404',
     },
