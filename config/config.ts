@@ -141,7 +141,34 @@ export default {
               component: './ListTableList',
             },
             {
-              component: './404',
+              name: 'menu',
+              icon: 'menu',
+              path: '/menus',
+              component: './MenusManage'
+            },
+            {
+              name: 'banner',
+              icon: 'BuildOutlined',
+              path: '/banner',
+              component: './BannerManage'
+            },
+            {
+              name: 'art',
+              icon: 'DeploymentUnitOutlined',
+              routes: [
+                {
+                  path: '/art/list',
+                  name: 'list',
+                  icon: 'OrderedListOutlined',
+                  component: './ArticleManage/List'
+                },
+                {
+                  path: '/art/list/update/',
+                  name: 'update',
+                  icon: 'EditOutlined',
+                  component: './ArticleManage/Update'
+                }
+              ]
             },
           ],
         },

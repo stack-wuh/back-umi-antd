@@ -4,6 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import { getAuthorization } from '@/utils/utils'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -53,4 +54,44 @@ const request = extend({
   credentials: 'include', // 默认请求是否带上cookie
 });
 
+function merge (payload: any) {
+  switch (payload.method.toLocaleUpperCase()) {
+    case 'GET': return {
+      ...payload,
+      params: {
+        ...payload.params,
+        timestamp: + new Date()
+      }
+    }
+    case 'POST': return (() => {
+      const { params, ...args} = payload
+      const { timestamp, ...s } = params
+      return {
+        ...args,
+        ...s
+      }
+    })()
+    default: return payload
+  }
+}
+
+/**
+ * 拦截器
+ */
+request.interceptors.request.use((url, ops) => {
+  try{
+    const _ops = merge(ops)
+    return ({
+      url: `${url}`,
+      options: {
+        ..._ops,
+        headers: {
+          Authorization: getAuthorization().token || undefined
+        }
+      }
+    })
+  } catch (err) {
+    throw(err)
+  }
+})
 export default request;

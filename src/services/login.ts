@@ -17,3 +17,15 @@ export async function fakeAccountLogin(params: LoginParamsType) {
 export async function getFakeCaptcha(mobile: string) {
   return request(`/api/login/captcha?mobile=${mobile}`);
 }
+
+export interface LoginFormValue {
+  username: string,
+  password: string
+}
+
+export async function postLoginByParams(params: LoginFormValue) {
+  return request('/api/users/login', {
+    method: 'POST',
+    data: params
+  })
+}
