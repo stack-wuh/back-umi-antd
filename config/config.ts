@@ -140,6 +140,7 @@ export default {
             {
               name: 'dashboard',
               icon: 'dashboard',
+              path: '/dashboard',
               routes: [
                 {
                   name: 'statistic',
