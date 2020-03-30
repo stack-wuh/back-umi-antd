@@ -137,7 +137,17 @@ export default {
                 },
               ],
             },
-
+            {
+              name: 'dashboard',
+              icon: 'dashboard',
+              routes: [
+                {
+                  name: 'statistic',
+                  path: '/statistic',
+                  component: './dashboard/statistic'
+                }
+              ]
+            },
             {
               name: 'art',
               path: '/art',

@@ -19,7 +19,7 @@ const MaterialList: React.FC<{}> = () => {
                     content: '是否要删除该条素材, 请确认?',
                     onOk: async () => {
                         const response = await delMaterial({ media_id })
-                        if (response.code === 20004) {
+                        if (response.code === 20002) {
                             message.success(response.msg)
                             if (actionRef.current) {
                                 actionRef.current.reload()

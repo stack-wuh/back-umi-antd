@@ -11,6 +11,7 @@ export default {
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
   'menu.dashboard.workplace': '工作台',
+  'menu.dashboard.statistic': '统计页',
   'menu.exception.403': '403',
   'menu.exception.404': '404',
   'menu.exception.500': '500',
@@ -56,5 +57,5 @@ export default {
   'menu.menu.list': '菜单列表',
   'menu.banner': 'banner管理',
   'menu.wx': '微信管理',
-  'menu.wx.material': '素材管理'
+  'menu.wx.material': '素材管理',
 };

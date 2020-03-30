@@ -1,14 +1,52 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { PageHeaderWrapper } from '@ant-design/pro-layout'
-import { Modal, message } from 'antd'
+import { Modal, message, List, Avatar, Button } from 'antd'
 import ProTable, { ProColumns } from '@ant-design/pro-table'
 import { TableListItem } from './data.d'
 import TableOptionBtns, { BtnOptionProps } from '@/components/TableOptionBtns'
 import { queryArticle, deleteArticle } from './service'
-import { postMaterial } from '../../WechatManage/Material/service'
+import { postMaterial, queryMaterial } from '../../WechatManage/Material/service'
+import CreateForm from "./components/createForm";
 
 const ArticleList: React.FC<{}> = ({ history }) => {
     const actionRef = useRef(null)
+    const [isShowDialog, setDialogState] = useState<boolean>(false)
+    const [listDataSource, setListDataSource] = useState([])
+    const [itemInfo, setItemInfo] = useState<object>({})
+
+    useEffect(() => {
+        fetchOptionList()
+    }, [])
+
+    const fetchOptionList = async () => {
+        const response = await queryMaterial({ type: 'image',count: 20, offset: 0 } )
+        setListDataSource(response.data.item)
+    }
+
+    const handleSendToWx = async params => {
+        const formModal =  {
+            "articles": [
+                {
+                    "title": itemInfo?.title,
+                    "thumb_media_id": params.media_id,
+                    "author": 'shadow',
+                    "digest": itemInfo?.sub_title,
+                    "show_cover_pic": 1,
+                    "content": itemInfo?.content,
+                    "content_source_url": 'https://wuh.site/blog/detail/'+itemInfo.id
+                },
+                //若新增的是多图文素材，则此处应还有几段articles结构
+            ]
+        }
+        const response = await postMaterial(formModal)
+        if (response.code === 20000) {
+            message.success('推送至微信成功')
+            setDialogState(false)
+        } else {
+            message.error(response.msg)
+        }
+    }
+
 
     const optionBtnList: BtnOptionProps[] = [
         {
@@ -37,7 +75,10 @@ const ArticleList: React.FC<{}> = ({ history }) => {
         },
         {
             text: '一键推送至微信',
-            onClick: () => {}
+            onClick: (data) => {
+                setItemInfo(data)
+                setDialogState(true)
+            }
         }
     ]
 
@@ -112,6 +153,23 @@ const ArticleList: React.FC<{}> = ({ history }) => {
             columns={columns}
             request={() => queryArticle()}
             rowKey='_id' />
+
+        {
+            isShowDialog && (<CreateForm 
+                visible={isShowDialog}
+                onCancel={() => setDialogState(false)} >
+                    <List 
+                        itemLayout='horizontal'
+                        dataSource={listDataSource}
+                        renderItem={item => (<List.Item>
+                            <List.Item.Meta 
+                                avatar={<Avatar src={item.url} />}
+                                title={ <Button type='link'>{item.name}</Button> }
+                                description={<span>{item.media_id}</span>} />
+                                <Button onClick={() => handleSendToWx(item)} type='link'>提交</Button>
+                        </List.Item>)} />
+                </CreateForm>)
+        }
     </PageHeaderWrapper>)
 }
 
