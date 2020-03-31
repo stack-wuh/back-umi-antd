@@ -95,6 +95,7 @@ const CreateForm: React.FC<CreateFormProps> = ({
     const handleCancel = () => {
         resetFields()
         onCancel()
+        setUploadFileList([])
     }
 
     return (<Modal

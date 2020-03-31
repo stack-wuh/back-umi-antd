@@ -5,6 +5,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout'
 import { UploadOutlined } from '@ant-design/icons'
 import { TableListItem } from '../List/data.d'
 import RichEditor from '@/components/RichEditor'
+import MarkdownEditor from '@/components/Markdown'
 import { postArticle, queryArticle, updateArticle } from '../List/service'
 
 const { Option } = Select
@@ -49,7 +50,7 @@ const rules = {
     sub_title: [{ required: true, message: '描述必填' }],
     type: [{ required: true, message: '文章类型必填' }],
     content: [{ required: true, message: '文章内容必填' }],
-    cover_img: [{ required: true, message: '必须上传封面图' }]
+    cover_img: [{ required: false, message: '必须上传封面图' }]
 }
 
 const uploadProps = {
@@ -65,8 +66,9 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
     const formRef = useRef<ReactNode>(null)
     const [uploadFileList, setUploadFileList] = useState([])
     const [isShowLoading, setLoading] = useState<boolean>(false)
+    const [editorType, setEditorType] = useState(1)
     const { location: { query } } = history
-    const { validateFields, resetFields, setFieldsValue } = form
+    const { validateFields, resetFields, setFieldsValue, getFieldValue } = form
 
     const fetch = async () => {
         if (!query.id) return
@@ -117,16 +119,19 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
     }
 
     const handleSubmit = async (): void => {
-        const coverImgUrl = uploadFileList[uploadFileList.length-1].thumbUrl
         const data = await validateFields()
+        console.log(data)
+        return 
         if (!data) return
         setLoading(true)
+        const coverImgUrl = uploadFileList[uploadFileList.length-1].thumbUrl
         const res = !query.id ? await postArticle({ ...data, cover_img: coverImgUrl })
                                 : await updateArticle({ ...data, cover_img: coverImgUrl, id: query.id })
         if (res.code === 20000) {
             message.success(res.msg)
             setTimeout(() => {
                 handleCancel()
+                setUploadFileList([])
             }, 500);
         } else {
             message.error(res.msg)
@@ -136,6 +141,10 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
 
     const handleCancel = () => {
         resetFields()
+    }
+
+    const handleTypeChange = (e) => {
+        setEditorType(e)
     }
 
     const normalFile = (e: any) => {
@@ -155,7 +164,7 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
                     <Input placeholder='请编辑描述' />
                 </Form.Item>
                 <Form.Item  label='文章类型' name='type' rules={rules.type}>
-                    <Select>
+                    <Select onChange={handleTypeChange}>
                         {
                             ArtType.map(v => (<Option key={v.value} value={v.value} >{v.label}</Option>))
                         }
@@ -176,9 +185,21 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
                                 <UploadOutlined style={{fontSize: '30px'}} />
                         </Upload>
                 </Form.Item>
-                <Form.Item label='内容' name='content' rules={rules.content}>
+                {/* <Form.Item label='内容' name='content' rules={rules.content}>
                     <RichEditor />
                 </Form.Item>
+                <Form.Item label='内容'>
+                    <MarkdownEditor />
+                </Form.Item> */}
+                {
+                    editorType === 1 ? 
+                        (<Form.Item label='内容' name='content' rules={rules.content}>
+                            <RichEditor />
+                        </Form.Item>) :
+                        (<Form.Item label='内容' name='content' rules={rules.content} valuePropName='source'>
+                            <MarkdownEditor form={form} />
+                        </Form.Item>)
+                }
                 <Form.Item wrapperCol={{span: 10, offset: 4}}>
                     <Button type='danger' style={{marginRight: '15px'}}>取消</Button>
                     <Button loading={isShowLoading} onClick={handleSubmit} type='primary'>提交</Button>

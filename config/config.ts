@@ -144,7 +144,7 @@ export default {
               routes: [
                 {
                   name: 'statistic',
-                  path: '/statistic',
+                  path: '/dashboard/statistic',
                   component: './dashboard/statistic'
                 }
               ]
