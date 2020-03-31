@@ -33,7 +33,7 @@ const BannerList: React.FC<{}> = () => {
     const optionBtn: BtnOptionProps[] = [
         {
             text: '更新',
-            onClick: (data) => {
+            onClick: (data: object): void => {
                 fetchOptionList()
                 setFormValue(data)
                 setDialogState(true)

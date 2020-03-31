@@ -24,7 +24,8 @@ export interface FormValueType extends Partial<TableListItem> {
 
 export interface ArtUpdateProps extends Partial<FormValueType> {
     className?: string,
-    data: TableListItem
+    data: TableListItem,
+    history: object
 }
 
 const formWrapper = {
@@ -56,29 +57,16 @@ const uploadProps = {
     action: 'https://api.wuh.site/upload/image'
 }
 
-const ArtUpdate: React.FC<{}> = ({
+const ArtUpdate: React.FC<ArtUpdateProps> = ({
     className,
     history
 }) => {
     const [form] = Form.useForm()
     const formRef = useRef<ReactNode>(null)
-    const [isShowUpload, setUploadState] = useState<{}>(false)
-    const [coverImgUrl, setCoverImg] = useState<string>('')
+    const [uploadFileList, setUploadFileList] = useState([])
     const [isShowLoading, setLoading] = useState<boolean>(false)
     const { location: { query } } = history
-    const { getFieldValue, validateFields, resetFields, setFieldsValue } = form
-
-    const handleToggleUpload = (): void => {
-        const coverImg = getFieldValue('cover_img')
-        if (coverImg) return setUploadState(true)
-        return setUploadState(false)
-    }
-
-    useEffect(() => {
-        if (formRef.current) {
-            handleToggleUpload()
-        }
-    }, [])
+    const { validateFields, resetFields, setFieldsValue } = form
 
     const fetch = async () => {
         if (!query.id) return
@@ -91,10 +79,15 @@ const ArtUpdate: React.FC<{}> = ({
             content: info.content,
             cover_img: info.cover_img
         }
-        setUploadState(true)
+        const itemValue = {
+            uid: '-1',
+            name: 'image.png',
+            status: 'done',
+            url: info.cover_img
+        }
+        setUploadFileList([itemValue])
         setTimeout(() => {
             setFieldsValue(formValue)
-            setCoverImg(info.cover_img)
         }, 200)
     }
     useEffect(() => {
@@ -105,18 +98,26 @@ const ArtUpdate: React.FC<{}> = ({
     }, [query])
 
     const handleUploadChange = (file: any): void => {
-        const { file : { response }} = file
-        if (response) {
-            const { data: { urlPath } } = response
-            if (urlPath) {
-                handleToggleUpload()
-                setCoverImg(urlPath)
-                setFieldsValue({cover_img: urlPath})
+        const { fileList } = file
+        const temp = fileList.map((fileItem: any) => {
+            if (fileItem.response) {
+                return {
+                    ...fileItem,
+                    thumbUrl: fileItem.response.data.urlPath
+                }
             }
-        }
+            return fileItem
+        })
+        setUploadFileList(temp)
+    }
+
+    const handleUploadRemove = (file: object) => {
+        const tempList = uploadFileList.filter(v => v?.uid!==file?.uid)
+        setUploadFileList(tempList)
     }
 
     const handleSubmit = async (): void => {
+        const coverImgUrl = uploadFileList[uploadFileList.length-1].thumbUrl
         const data = await validateFields()
         if (!data) return
         setLoading(true)
@@ -135,8 +136,6 @@ const ArtUpdate: React.FC<{}> = ({
 
     const handleCancel = () => {
         resetFields()
-        setUploadState(false)
-        setCoverImg(null)
     }
 
     const normalFile = (e: any) => {
@@ -162,28 +161,21 @@ const ArtUpdate: React.FC<{}> = ({
                         }
                     </Select>
                 </Form.Item>
-                {
-                    !isShowUpload ? (
-                        <Form.Item 
-                            label='封面图' 
-                            name='cover_img' 
-                            rules={rules.cover_img} 
-                            getValueFromEvent={normalFile}
-                            valuePropName='fileList'>
-                                <Upload {...uploadProps} onChange={ handleUploadChange } listType='picture-card' >
-                                    <UploadOutlined style={{fontSize: '30px'}} />
-                                </Upload>
-                        </Form.Item>
-                    ) : (
-                        <Form.Item label='封面图' name='cover_img' rules={rules.cover_img} valuePropName='src'>
-                            <img 
-                                src={coverImgUrl} 
-                                alt="cover_img" 
-                                style={{width: '200px', objectFit: 'contain', objectPosition: 'center center'}}/>
-                            <Button onClick={() => setUploadState(false)}>重新上传</Button>
-                        </Form.Item>
-                    )
-                }
+                <Form.Item 
+                    label='封面图' 
+                    name='cover_img' 
+                    rules={rules.cover_img} 
+                    getValueFromEvent={normalFile}
+                    valuePropName='file'>
+                        <Upload 
+                            {...uploadProps} 
+                            fileList={uploadFileList}  
+                            onChange={ handleUploadChange }
+                            onRemove={ handleUploadRemove }  
+                            listType='picture-card' >
+                                <UploadOutlined style={{fontSize: '30px'}} />
+                        </Upload>
+                </Form.Item>
                 <Form.Item label='内容' name='content' rules={rules.content}>
                     <RichEditor />
                 </Form.Item>
