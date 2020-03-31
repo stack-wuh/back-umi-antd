@@ -5,7 +5,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout'
 import { UploadOutlined } from '@ant-design/icons'
 import { TableListItem } from '../List/data.d'
 import RichEditor from '@/components/RichEditor'
-import { postArticle, queryArticle } from '../List/service'
+import { postArticle, queryArticle, updateArticle } from '../List/service'
 
 const { Option } = Select
 
@@ -94,6 +94,7 @@ const ArtUpdate: React.FC<{}> = ({
         setUploadState(true)
         setTimeout(() => {
             setFieldsValue(formValue)
+            setCoverImg(info.cover_img)
         }, 200)
     }
     useEffect(() => {
@@ -119,7 +120,8 @@ const ArtUpdate: React.FC<{}> = ({
         const data = await validateFields()
         if (!data) return
         setLoading(true)
-        const res = await postArticle({ ...data, cover_img: coverImgUrl })
+        const res = !query.id ? await postArticle({ ...data, cover_img: coverImgUrl })
+                                : await updateArticle({ ...data, cover_img: coverImgUrl, id: query.id })
         if (res.code === 20000) {
             message.success(res.msg)
             setTimeout(() => {
@@ -178,6 +180,7 @@ const ArtUpdate: React.FC<{}> = ({
                                 src={coverImgUrl} 
                                 alt="cover_img" 
                                 style={{width: '200px', objectFit: 'contain', objectPosition: 'center center'}}/>
+                            <Button onClick={() => setUploadState(false)}>重新上传</Button>
                         </Form.Item>
                     )
                 }

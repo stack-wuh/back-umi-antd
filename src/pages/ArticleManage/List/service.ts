@@ -20,3 +20,13 @@ export async function deleteArticle (params: object) {
         params
     })
 }
+
+interface updateFormValue extends FormValueType {
+    id: string
+}
+export async function updateArticle (params: updateFormValue) {
+    return request('/api/articles/update', {
+        method: 'PUT',
+        data: params
+    })
+}
