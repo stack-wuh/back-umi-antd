@@ -184,12 +184,6 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
                                 <UploadOutlined style={{fontSize: '30px'}} />
                         </Upload>
                 </Form.Item>
-                {/* <Form.Item label='内容' name='content' rules={rules.content}>
-                    <RichEditor />
-                </Form.Item>
-                <Form.Item label='内容'>
-                    <MarkdownEditor />
-                </Form.Item> */}
                 {
                     editorType === 1 ? 
                         (<Form.Item label='内容' name='content' rules={rules.content}>

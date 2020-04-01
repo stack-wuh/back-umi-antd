@@ -1,5 +1,5 @@
 import React, { Fragment, ReactNode, useRef, useState, useEffect } from 'react'
-import { FullscreenOutlined, FullscreenExitOutlined, ReadOutlined } from '@ant-design/icons'
+import { FullscreenOutlined, FullscreenExitOutlined, ReadOutlined, UploadOutlined } from '@ant-design/icons'
 import styles from './editor.less'
 import Preview from './template'
 
@@ -51,6 +51,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             document.webkitExitFullscreen()
         }
     }
+    const handleUpload = () => {
+        
+    }
 
     const handleTogglePreview = () => {
         setPreviewState(!isShowPreview)
@@ -61,6 +64,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             case 'fullscreen': return handleFullScreen()
             case 'exitfullscreen': return handleExitFullScreen()
             case 'preview': return handleTogglePreview()
+            case 'upload': return handleUpload()
             default: return {}
         }
     }
