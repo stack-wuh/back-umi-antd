@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useRef, useState } from 'react'
+import React, { Fragment, ReactNode, useRef, useState, useEffect } from 'react'
 import { FullscreenOutlined, FullscreenExitOutlined, ReadOutlined } from '@ant-design/icons'
 import styles from './editor.less'
 import Preview from './template'
@@ -12,14 +12,16 @@ export interface MarkdownEditorProps {
     toolbar: ToolbarProps[] | ReactNode,
     value: string,
     form?: object,
-    id?: string
+    id?: string,
+    onChange: (value: string) => void
 }
 
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     toolbar,
     value,
     form,
-    id
+    id,
+    onChange
 }) => {
     const wrapRef = useRef()
     const [htmlString, setHtmlString] = useState(value)
@@ -78,7 +80,18 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         const { target: { value } } = e
         setHtmlString(value)
         form&&form.setFieldsValue({ id: value })
+        if (onChange) {
+            onChange(value)
+        }
     }
+
+    useEffect(() => {
+        let value = form && form.getFieldValue(id)
+        if (value) {
+            form.setFieldsValue({ id: value })
+            setHtmlString(value)
+        }
+    })
 
     return (<Fragment>
         <div ref={wrapRef}>
@@ -86,7 +99,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 <Toolbar<null> />
             </div>
             <div className={styles.outer}>
-                <textarea onChange={handleChange} type="textarea" className={styles.textarea} />
+                <textarea value={htmlString} onChange={handleChange} type="textarea" className={styles.textarea} />
                 {
                     isShowPreview &&
                     (<Preview className={styles.preview} source={htmlString} />)

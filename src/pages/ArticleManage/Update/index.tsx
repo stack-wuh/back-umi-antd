@@ -50,7 +50,7 @@ const rules = {
     sub_title: [{ required: true, message: '描述必填' }],
     type: [{ required: true, message: '文章类型必填' }],
     content: [{ required: true, message: '文章内容必填' }],
-    cover_img: [{ required: false, message: '必须上传封面图' }]
+    cover_img: [{ required: true, message: '必须上传封面图' }]
 }
 
 const uploadProps = {
@@ -88,6 +88,7 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
             url: info.cover_img
         }
         setUploadFileList([itemValue])
+        setEditorType(info.type)
         setTimeout(() => {
             setFieldsValue(formValue)
         }, 200)
@@ -120,8 +121,6 @@ const ArtUpdate: React.FC<ArtUpdateProps> = ({
 
     const handleSubmit = async (): void => {
         const data = await validateFields()
-        console.log(data)
-        return 
         if (!data) return
         setLoading(true)
         const coverImgUrl = uploadFileList[uploadFileList.length-1].thumbUrl
